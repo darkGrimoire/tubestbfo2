@@ -33,16 +33,33 @@ def CFGtoCNF(grammar):
             AddRule(rule)
             continue
         elif len(rule) > 2:
-            # Rule is in form A -> X|B or A -> X|a
-
-S -> FROM OBJ IMPORT OBJ AS OBJ
-
-for i in range()
-# GRAMMAR: ASSIGNMENT
-S -> VAR EQU_SIGN STR
-S -> VAR EQU_SIGN INT
-S -> VAR EQU_SIGN FLOAT
-S -> VAR EQU_SIGN ARRAY
-ASSIGNMENT TYPE_VAR
-VAR EQU_SIGN STR
-VAR EQU_SIGN ARRAY
+            # Rule is in form A -> X B C or A -> X a.
+            terminals = [(item, i) for i, item in enumerate(rule) if item[0] == "'"]
+            if terminals:
+                for item in terminals:
+                    # Create a new non terminal symbol and replace the terminal symbol with it.
+                    # The non terminal symbol derives the replaced terminal symbol.
+                    rule[item[1]] = f"{rule[0]}{str(idx)}"
+                    newRules += [f"{rule[0]}{str(idx)}", item[0]]
+                idx += 1
+            while len(rule) > 3:
+                newRules += [f"{rule[0]}{str(idx)}", rule[1], rule[2]]
+                rule = [rule[0]] + [f"{rule[0]}{str(idx)}"] + rule[3:]
+                idx += 1
+        # Adds the modified or unmodified (in case of A -> x i.e.) rules.
+        AddRule(rule)
+        result.append(rule)
+        if newRules:
+            result.append(newRules)
+    # Handle the unit productions (A -> X)
+    while unitProductions:
+        rule = unitProductions.pop()
+        if rule[1] in GLOB_RULES:
+            for item in GLOB_RULES[rule[1]]:
+                newRule = [rule[0]] + item
+                if len(newRule) > 2 or newRule[1][0] == "'":
+                    result.append(newRule)
+                else:
+                    unitProductions.append(newRule)
+                AddRule(newRule)
+    return result
