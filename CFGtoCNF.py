@@ -4,11 +4,11 @@ GLOB_RULES = {}
 def ReadGrammar(source):
     # Read CFG either from file or string
     if os.path.isfile(source):
-        with open(source) as cfg:
+        with open(source, 'r') as cfg:
             lines = cfg.readlines()
     else:
         lines = source.split("\n")
-    return [x.replace(" -> ","").split("|") for x in lines]
+    return [x.strip().replace("->","").split() for x in lines]
 
 def AddRule(rule):
     # Add rule to the GLOB_RULES
