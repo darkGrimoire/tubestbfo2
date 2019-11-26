@@ -1,21 +1,8 @@
-#-------------------------------------------------------------------------------
-# lexer.py
-#
-# A generic regex-based Lexer/tokenizer tool.
-# See the if __main__ section in the bottom for an example.
-#
-# Eli Bendersky (eliben@gmail.com)
-# This code is in the public domain
-# Last modified: August 2010
-#-------------------------------------------------------------------------------
 import re
 import sys
 import os.path
 
 class Token(object):
-    """ A simple Token structure.
-        Contains the token type, value and position.
-    """
     def __init__(self, type, val, pos):
         self.type = type
         self.val = val
@@ -29,37 +16,12 @@ class Token(object):
 
 
 class LexerError(Exception):
-    """ Lexer error exception.
-        pos:
-            Position in the input line where the error occurred.
-    """
     def __init__(self, pos):
         self.pos = pos
 
 
 class Lexer(object):
-    """ A simple regex-based lexer/tokenizer.
-        See below for an example of usage.
-    """
     def __init__(self, rules, skip_whitespace=True):
-        """ Create a lexer.
-            rules:
-                A list of rules. Each rule is a `regex, type`
-                pair, where `regex` is the regular expression used
-                to recognize the token and `type` is the type
-                of the token to return when it's recognized.
-            skip_whitespace:
-                If True, whitespace (\s+) will be skipped and not
-                reported by the lexer. Otherwise, you have to
-                specify your rules for whitespace, or it will be
-                flagged as an error.
-        """
-        # All the regexes are concatenated into a single one
-        # with named groups. Since the group names must be valid
-        # Python identifiers, but the token types used by the
-        # user are arbitrary strings, we auto-generate the group
-        # names and map them to token types.
-        #
         idx = 1
         regex_parts = []
         self.group_type = {}
@@ -74,8 +36,6 @@ class Lexer(object):
         self.re_ws_skip = re.compile('\S')
 
     def input(self, buf):
-        """ Initialize the lexer with a buffer as input.
-        """
         source = ''
         if os.path.isfile(buf):
             with open(buf, "r") as file:
@@ -90,13 +50,6 @@ class Lexer(object):
         self.pos = 0
 
     def token(self):
-        """ Return the next token (a Token object) found in the
-            input buffer. None is returned if the end of the
-            buffer was reached.
-            In case of a lexing error (the current chunk of the
-            buffer matches no rule), a LexerError is raised with
-            the position of the error.
-        """
         if self.pos >= len(self.buf):
             return None
         else:
@@ -120,8 +73,6 @@ class Lexer(object):
             raise LexerError(self.pos)
 
     def tokens(self):
-        """ Returns an iterator to the tokens found in the buffer.
-        """
         while 1:
             tok = self.token()
             if tok is None: break
@@ -184,9 +135,9 @@ if __name__ == '__main__':
         ('!',              'LOP_NOT'),
         ('&',              'LOP_AND'),
         ('\|',             'LOP_OR'),
-        ('and',            'LOP_AND'),
-        ('not',            'LOP_NOT'),
-        ('or',             'LOP_OR'),
+        ('and\s+',            'LOP_AND'),
+        ('not\s+',            'LOP_NOT'),
+        ('or\s+',             'LOP_OR'),
         # COMPARATOR
         ('==',              'COMP_EQUALS'),
         ('!=',              'COMP_NOT_EQUALS'),
@@ -197,30 +148,30 @@ if __name__ == '__main__':
         # ASSIGNMENT
         ('=',               'ASSIGNMENT'),
         # RESERVED KEYWORDS
-        ('from',            'FROM'),
-        ('import',          'IMPORT'),
-        ('as',           'AS'),
-        ('in',              'IN'),
-        ('is',              'IS'),
+        ('from\s+',            'FROM'),
+        ('import\s+',          'IMPORT'),
+        ('as\s+',           'AS'),
+        ('in\s+',              'IN'),
+        ('is\s+',              'IS'),
         ('break',           'LOOP_BREAK'),
         ('continue',        'LOOP_CONTINUE'),
-        ('class',           'CLASS'),
-        ('def',             'DEF'),
+        ('class\s+',           'CLASS'),
+        ('def\s+',             'DEF'),
         ('pass',            'PASS'),
-        ('return',          'RETURN'),
-        ('if',              'IF'),
-        ('elif',            'ELIF'),
-        ('else',            'ELSE'),
-        ('for',             'FOR'),
-        ('while',           'WHILE'),
-        ('raise',           'RAISE'),
-        ('with',            'WITH'),
+        ('return\W',          'RETURN'),
+        ('if\W',              'IF'),
+        ('elif\W',            'ELIF'),
+        ('else\W',            'ELSE'),
+        ('for\s+',             'FOR'),
+        ('while\W',           'WHILE'),
+        ('raise\s+',           'RAISE'),
+        ('with\s+',            'WITH'),
         (':',               'COLON'),
         # MANY NAMES
         ('[a-zA-Z_]\w*',    'OBJECT'),
     ]
     lx = Lexer(rules, skip_whitespace=True)
-    lx.input('test.py')
+    lx.input('input1.txt')
 
     try:
         with open("lexered.txt", "w") as file:

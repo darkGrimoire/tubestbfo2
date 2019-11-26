@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+True and False
 print("HEWWOO!") # uwaw
 sebwah_variable = 5 + 2
 var2 = 5       +      2

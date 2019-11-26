@@ -1,58 +1,26 @@
 import os.path
-import argparse
-import grammar_converter
+import CFGtoCNF
 
 
 class Node:
-    """
-    Used for storing information about a non-terminal symbol. A node can have a maximum of two
-    children because of the CNF of the grammar.
-    It is possible though that there are multiple parses of a sentence. In this case information
-    about an alternative child is stored in self.child1 or self.child2 (the parser will decide
-    where according to the ambiguous rule).
-    Either child1 is a terminal symbol passed as string, or both children are Nodes.
-    """
-
     def __init__(self, symbol, child1, child2=None):
         self.symbol = symbol
         self.child1 = child1
         self.child2 = child2
 
     def __repr__(self):
-        """
-        :return: the string representation of a Node object.
-        """
         return self.symbol
 
 
 class Parser:
-    """
-    A CYK parser which is able to parse any grammar in CNF. The grammar can be read from a file or
-    passed as a string. It either returns a string representation of the parse tree(s) or prints it
-    to standard out.
-    """
-
     def __init__(self, grammar, sentence):
-        """
-        Creates a new parser object which will read in the grammar and transform it into CNF and
-        then parse the given sentence with that grammar.
-        :param grammar: the file path to the grammar/the string repr. of the grammar to read in
-        :param sentence: the file path to the sentence/the string repr. of the sentence to read in
-        """
         self.parse_table = None
         self.prods = {}
         self.grammar = None
-        if os.path.isfile(grammar):
-            self.grammar_from_file(grammar)
-        else:
-            self.grammar_from_string(grammar)
+        self.read_grammar(grammar)
         self.__call__(sentence)
 
     def __call__(self, sentence, parse=False):
-        """
-        Parse the given sentence (string or file) with the earlier given grammar.
-        :param sentence: the sentence to parse with self.grammar
-        """
         if os.path.isfile(sentence):
             with open(sentence) as inp:
                 self.input = inp.readline().split()
@@ -61,20 +29,8 @@ class Parser:
         else:
             self.input = sentence.split()
 
-    def grammar_from_file(self, grammar):
-        """
-        Reads in a CFG from a given file, converts it to CNF and stores it in self.grammar.
-        :param grammar: the file in which the grammar is stored.
-        """
-        self.grammar = grammar_converter.convert_grammar(grammar_converter.read_grammar(grammar))
-
-    def grammar_from_string(self, grammar):
-        """
-        Reads in a CFG from a string, converts it to CNF and stores it in self.grammar.
-        :param grammar: the CFG in string representation.
-        :return:
-        """
-        self.grammar = grammar_converter.convert_grammar([x.replace("->", "").split() for x in grammar.split("\n")])
+    def read_grammar(self, grammar):
+        self.grammar = CFGtoCNF.ReadGrammar(grammar)
 
     def parse(self):
         """
@@ -114,8 +70,7 @@ class Parser:
         Print the parse tree starting with the start symbol. Alternatively it returns the string
         representation of the tree(s) instead of printing it.
         """
-        start_symbol = 'S'
-        # print(self.grammar)
+        start_symbol = self.grammar[0][0]
         print("parse table: ",self.parse_table)
         final_nodes = [n for n in self.parse_table[-1][0] if n.symbol == start_symbol]
         # print(self.parse_table)
