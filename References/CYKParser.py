@@ -114,7 +114,7 @@ class Parser:
         Print the parse tree starting with the start symbol. Alternatively it returns the string
         representation of the tree(s) instead of printing it.
         """
-        start_symbol = self.grammar[0][0]
+        start_symbol = 'S'
         print("parse table: ",self.parse_table)
         final_nodes = [n for n in self.parse_table[-1][0] if n.symbol == start_symbol]
         # print(self.parse_table)
