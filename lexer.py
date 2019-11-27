@@ -82,9 +82,11 @@ class Lexer(object):
 if __name__ == '__main__':
     rules = [
         # COMMENTS
-        ('#.*\n',                     'COMMENT'),
-        ('"""',                       'BCOMMENT'),
-        ("'''",                       'BCOMMENT'),
+        ('#.*',                     'COMMENT'),
+        ('"""[^"]*"""',           'BBCOMMENT'),
+        ("'''[\s\S]+'''",           'BBCOMMENT'),
+        ('"""',                     'BCOMMENT'),
+        ("'''",                     'BCOMMENT'),
         # TYPES
         ('\d+\.\d+',             'TYPE_FLOAT'),
         ('\d+',                  'TYPE_INT'),
@@ -129,15 +131,20 @@ if __name__ == '__main__':
         ('{',               'OPEN_CBRACKET'),
         ('}',               'CLOSE_CBRACKET'),
         # COMMA and DOT
-        ('\.',              'DOT'),
+        ('\.',             'DOT'),
         (',',              'SEPARATOR'),
+        # BINARY OPERATOR
+        ('~',            'BINOP_NEGATE'),
+        ('\^',            'BINOP_XOR'),
+        ('<<',           'BINOP_LEFTSHIFT'),
+        ('>>',           'BINOP_RIGHTSHIFT'),
         # LOGICAL OPERATOR
-        ('!',              'LOP_NOT'),
-        ('&',              'LOP_AND'),
-        ('\|',             'LOP_OR'),
-        ('and\s+',            'LOP_AND'),
-        ('not\s+',            'LOP_NOT'),
-        ('or\s+',             'LOP_OR'),
+        ('!',            'LOP_NOT'),
+        ('&',            'LOP_AND'),
+        ('\|',           'LOP_OR'),
+        ('and\s+',       'LOP_AND'),
+        ('not\s+',       'LOP_NOT'),
+        ('or\s+',        'LOP_OR'),
         # COMPARATOR
         ('==',              'COMP_EQUALS'),
         ('!=',              'COMP_NOT_EQUALS'),
@@ -150,28 +157,28 @@ if __name__ == '__main__':
         # RESERVED KEYWORDS
         ('from\s+',            'FROM'),
         ('import\s+',          'IMPORT'),
-        ('as\s+',           'AS'),
+        ('as\s+',              'AS'),
         ('in\s+',              'IN'),
         ('is\s+',              'IS'),
-        ('break',           'LOOP_BREAK'),
-        ('continue',        'LOOP_CONTINUE'),
+        ('break',              'LOOP_BREAK'),
+        ('continue',           'LOOP_CONTINUE'),
         ('class\s+',           'CLASS'),
         ('def\s+',             'DEF'),
-        ('pass',            'PASS'),
-        ('return\W',          'RETURN'),
-        ('if\W',              'IF'),
-        ('elif\W',            'ELIF'),
-        ('else\W',            'ELSE'),
+        ('pass',               'PASS'),
+        ('return\W',           'RETURN'),
+        ('if\W',               'IF'),
+        ('elif\W',             'ELIF'),
+        ('else',               'ELSE'),
         ('for\s+',             'FOR'),
-        ('while\W',           'WHILE'),
+        ('while\W',            'WHILE'),
         ('raise\s+',           'RAISE'),
         ('with\s+',            'WITH'),
-        (':',               'COLON'),
+        (':',                  'COLON'),
         # MANY NAMES
         ('[a-zA-Z_]\w*',    'OBJECT'),
     ]
     lx = Lexer(rules, skip_whitespace=True)
-    lx.input('"""abc"""')
+    lx.input('input1.txt')
 
     try:
         with open("lexered.txt", "w") as file:

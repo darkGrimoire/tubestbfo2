@@ -62,4 +62,11 @@ def CFGtoCNF(grammar):
                 else:
                     unitProductions.append(newRule)
                 AddRule(newRule)
+    # print(result)
+    with open('CNF.txt', 'w') as file:
+        for element in result:
+            if len(element)==3:
+                file.write(f'{element[0]} -> {element[1]} {element[2]}\n')
+            elif len(element)==2:
+                file.write(f'{element[0]} -> {element[1]}\n')
     return result
