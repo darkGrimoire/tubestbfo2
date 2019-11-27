@@ -22,7 +22,7 @@ if isExist(inputfile) and isExist(grammarfile):
     # Open File
     with open(inputfile, 'r') as file:
         lines = file.readlines()
-    for line in lines:
+    for i, line in enumerate(lines):
         lexered = ''
         # Lexer each line in file
         lx.input(line)
@@ -33,7 +33,7 @@ if isExist(inputfile) and isExist(grammarfile):
         except lexer.LexerError as err:
             print(f'LexerError at position {err.pos}')
         # Remove Comment, check block comments
-        print(lexered)
+        # print(lexered)
         if "BBCOMMENT" in lexered:
             lexered = lexered.replace("BBCOMMENT ","")
         if "BCOMMENT" in lexered:
@@ -53,36 +53,38 @@ if isExist(inputfile) and isExist(grammarfile):
             continue
         if "COMMENT" in lexered:
             lexered = lexered.replace("COMMENT ","")
-        print(lexered)
         # if DEF is in lexered
         # if "DEF" in lexered:
         #     level+=1
         #     isDef = True
         #
         # if IF is in lexered
-        if "IF" in lexered:
-            level+=1
-            isIfLevel.append(level)
         # Elif and else must be followed with if first
         if ("ELIF" or "ELSE") in lexered:
-            print('uwu')
+            # print('uwu')
             if level not in isIfLevel:
                 isAccepted = False
                 break
             elif "ELSE" in lexered:
                 isIfLevel.remove(level)
                 level-=1
+        elif "IF" in lexered:
+            level+=1
+            isIfLevel.append(level)
+        # print(lexered, level, isIfLevel)
         # Parse lexered line
         CYK(lexered,parse=True)
-        isAccepted = CYK.print_tree(output=True)
+        isAccepted = CYK.print_tree(output=False)
         if not isAccepted:
             break
         if isBlockComment:
             isSkipUntilNextBC = True
             isBlockComment = False
     if isAccepted:
-        print("Accepted")
+        print("\nAccepted")
     else:
-        print("Syntax Error")
+        print(f"\nSyntax Error at line {i+1}:")
+        print(f"    >>> {line.strip()}")
+        print(f"readed: {lexered}")
 else:
     print("file not exist!")

@@ -54,7 +54,7 @@ class Parser:
 
     def print_tree(self, output=True):
         start_symbol = "S"
-        print(len(self.input))
+        # print(len(self.input))
         if len(self.input) == 0:
             if output:
                 print("Nothing to parse! Either comment or it really is empty")
