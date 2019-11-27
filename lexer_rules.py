@@ -2,7 +2,7 @@ rules = [
         # COMMENTS
         ('#.*',                     'COMMENT'),
         ('"""[^"]*"""',           'BBCOMMENT'),
-        ("'''[\s\S]+'''",           'BBCOMMENT'),
+        ("'''[^']*'''",           'BBCOMMENT'),
         ('"""',                     'BCOMMENT'),
         ("'''",                     'BCOMMENT'),
         # TYPES
