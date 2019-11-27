@@ -6,7 +6,11 @@ import lexer_rules
 """ FLAGS """
 isBlockComment = False
 isSkipUntilNextBC = False
+isDef = False
+isIfLevel = []
+level = 0
 isAccepted = True
+
 
 """ MAIN PROGRAM """
 inputfile = input('input file: ')
@@ -25,6 +29,7 @@ if isExist(inputfile) and isExist(grammarfile):
         try:
             for tok in lx.tokens():
                 lexered += f'{tok!r}'
+                # print(lexered)
         except lexer.LexerError as err:
             print(f'LexerError at position {err.pos}')
         # Remove Comment, check block comments
@@ -35,7 +40,10 @@ if isExist(inputfile) and isExist(grammarfile):
             if not isSkipUntilNextBC:
                 isBlockComment = True
                 posBC = lexered.find("BCOMMENT")
-                lexered = lexered[:posBC-1:]
+                if posBC == 0:
+                    lexered = ''
+                else:
+                    lexered = lexered[:posBC:]
             else:
                 isSkipUntilNextBC = False
                 posBC = lexered.find("BCOMMENT")
@@ -46,6 +54,24 @@ if isExist(inputfile) and isExist(grammarfile):
         if "COMMENT" in lexered:
             lexered = lexered.replace("COMMENT ","")
         print(lexered)
+        # if DEF is in lexered
+        # if "DEF" in lexered:
+        #     level+=1
+        #     isDef = True
+        #
+        # if IF is in lexered
+        if "IF" in lexered:
+            level+=1
+            isIfLevel.append(level)
+        # Elif and else must be followed with if first
+        if ("ELIF" or "ELSE") in lexered:
+            print('uwu')
+            if level not in isIfLevel:
+                isAccepted = False
+                break
+            elif "ELSE" in lexered:
+                isIfLevel.remove(level)
+                level-=1
         # Parse lexered line
         CYK(lexered,parse=True)
         isAccepted = CYK.print_tree(output=True)

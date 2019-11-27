@@ -75,6 +75,7 @@ class Parser:
             else:
                 if output:
                     print("The given sentence is not contained in the language produced by the given grammar!")
+                    print(self.parse_table)
                 return False
 
 

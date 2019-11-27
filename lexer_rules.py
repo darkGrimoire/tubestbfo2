@@ -52,16 +52,17 @@ rules = [
         ('\.',             'DOT'),
         (',',              'SEPARATOR'),
         # BINARY OPERATOR
-        ('~',            'BINOP_FLOOR_DIVIDE'),
-        ('<<',           'OP_EXPONENTIAL'),
-        ('>>',           'OP_PLUS'),
+        ('~',            'BINOP_NEGATE'),
+        ('\^',            'BINOP_XOR'),
+        ('<<',           'BINOP_LEFTSHIFT'),
+        ('>>',           'BINOP_RIGHTSHIFT'),
+        # LOGICAL OPERATOR
         ('!',            'LOP_NOT'),
         ('&',            'LOP_AND'),
-        # LOGICAL OPERATOR
-        ('\|',             'LOP_OR'),
-        ('and\s+',         'LOP_AND'),
-        ('not\s+',         'LOP_NOT'),
-        ('or\s+',          'LOP_OR'),
+        ('\|',           'LOP_OR'),
+        ('and\s+',       'LOP_AND'),
+        ('not\s+',       'LOP_NOT'),
+        ('or\s+',        'LOP_OR'),
         # COMPARATOR
         ('==',              'COMP_EQUALS'),
         ('!=',              'COMP_NOT_EQUALS'),
